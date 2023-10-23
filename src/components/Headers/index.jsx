@@ -1,11 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Header as GrmHeader } from 'grommet';
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { AUTH_TOKEN } from "../../constants";
 import "./style.css";
 
 const Header = () => {
-    const user = localStorage.getItem(AUTH_TOKEN);
+    const [user, setUser] = useState(localStorage.getItem(AUTH_TOKEN));
+    const location = useLocation();
+
+    useEffect(() => {
+        setUser(localStorage.getItem(AUTH_TOKEN));
+    }, [location])
 
     return (
         <GrmHeader background={"brand"} pad={"medium"}>
