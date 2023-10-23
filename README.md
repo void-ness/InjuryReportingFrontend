@@ -30,5 +30,10 @@ A graphql based server to handle incoming requests and serve data.
 - Database - MongoDB
 - Bcrypt and JWT - for authentication purposes
 
+*Note: Before running the project locally you need to create a `.env` file. A template for the same can be found in `example.env`*
+
 **Backend code:** (link)[https://github.com/void-ness/InjuryReportingBackend]
 
+Demo Credentials to login into the app:
+email - demo
+password - demo
