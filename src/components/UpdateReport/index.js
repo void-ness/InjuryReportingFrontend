@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useMutation } from '@apollo/client';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Button, DateInput, Form, FormField, Header, Heading, MaskedInput, TextInput } from "grommet";
-import { POST_REPORT_MUTATION } from "../../utils/graphql/Mutations";
+import { UPDATE_REPORT_MUTATION } from "../../utils/graphql/Mutations";
 import { AUTH_TOKEN } from "../../constants";
 import { InputTimeMask, getQueryVariables } from "../../utils/helper";
 
-const CreateReport = () => {
+const UpdateReport = () => {
     const [formState, setFormState] = useState({
         name: "",
         createdAt: "",
@@ -14,6 +14,8 @@ const CreateReport = () => {
         injuryTime: "",
         reportTime: ""
     });
+
+    const reportId = useParams().id;
 
     const navigate = useNavigate();
 
@@ -25,14 +27,23 @@ const CreateReport = () => {
         }
     })
 
-    const [postReport] = useMutation(POST_REPORT_MUTATION, {
+    const [updateReport] = useMutation(UPDATE_REPORT_MUTATION, {
         onCompleted: () => navigate('/')
     })
 
     const handleSubmit = () => {
         const queryVariables = getQueryVariables(formState);
 
-        postReport({
+        if (Object.keys(queryVariables).length === 0) {
+            alert("You haven't updated anything");
+            return;
+        }
+
+        queryVariables['reportId'] = reportId;
+
+        console.log(queryVariables);
+
+        updateReport({
             variables: queryVariables
         });
     }
@@ -52,10 +63,11 @@ const CreateReport = () => {
             >
                 <Header background={"brand"} pad={'medium'} margin={{ bottom: "medium" }}>
                     <Heading>
-                        Add a New Report
+                        Update Existing Report
                     </Heading>
                 </Header>
-                <FormField label="Name of Reporter" name='name' htmlFor='reporter-name' required>
+
+                <FormField label="Name of Reporter" name='name' htmlFor='reporter-name'>
                     <TextInput
                         id='reporter-name'
                         name="name"
@@ -64,11 +76,11 @@ const CreateReport = () => {
                             ...formState,
                             name: e.target.value
                         })}
-                        placeholder="Enter the name of reporter"
+                        placeholder="Enter the updated name of reporter"
                     />
                 </FormField>
 
-                <FormField label="Date of Injury" name='injuryDate' htmlFor='injury-date' required>
+                <FormField label="Date of Injury" name='injuryDate' htmlFor='injury-date'>
                     <DateInput
                         id="injury-date"
                         name="injuryDate"
@@ -89,7 +101,6 @@ const CreateReport = () => {
                         mask={InputTimeMask}
                         value={formState.injuryTime}
                         onChange={(e) => {
-                            console.log(e.target.value);
                             setFormState({
                                 ...formState,
                                 injuryTime: e.target.value
@@ -98,7 +109,7 @@ const CreateReport = () => {
                     />
                 </FormField>
 
-                <FormField label="Date of Report" name='reportDate' htmlFor='report-date' required>
+                <FormField label="Date of Report" name='reportDate' htmlFor='report-date'>
                     <DateInput
                         id="report-date"
                         name="reportDate"
@@ -125,15 +136,15 @@ const CreateReport = () => {
                     />
                 </FormField>
 
-                <Box direction="row" gap='medium'>
-                    <Button type='submit' primary label="Add new report" />
+                <Box direction='row' gap='medium'>
+                    <Button type='submit' primary label="Update report" />
 
                     <Button type='reset' label="Reset" onClick={() => setFormState({
                         name: "",
                         createdAt: "",
                         injuryDate: "",
-                        reportTime: "",
-                        injuryTime: ""
+                        injuryTime: "",
+                        reportTime: ""
                     })} />
                 </Box>
             </Form>
@@ -142,4 +153,4 @@ const CreateReport = () => {
     );
 };
 
-export default CreateReport;
+export default UpdateReport;

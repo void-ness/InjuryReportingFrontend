@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Box, Button, Form, FormField, Header, Text, TextInput } from 'grommet';
-import { gql, useMutation } from '@apollo/client'
+import { Box, Button, Form, FormField, Header, ResponsiveContext, Text, TextInput } from 'grommet';
+import { useMutation } from '@apollo/client'
 import { AUTH_TOKEN } from '../../constants';
 import { useNavigate } from 'react-router-dom';
+import { LOGIN_MUTATION, SIGNUP_MUTATION } from '../../utils/graphql/Mutations';
 
 const Login = (props) => {
     const navigate = useNavigate();
+    const size = React.useContext(ResponsiveContext);
 
     const [formState, setFormState] = useState({
         name: "",
@@ -14,43 +16,6 @@ const Login = (props) => {
         newUser: false
     });
 
-    const LOGIN_MUTATION = gql`
-        mutation LoginUser(
-            $email: String!, 
-            $password: String!) {
-            login(
-                email: $email, 
-                password: $password
-            ) {
-                token
-                user {
-                    id
-                    email
-                }
-            }
-        }
-    `
-
-    const SIGNUP_MUTATION = gql`
-        mutation SignupUser (
-            $name: String!,
-            $email: String!,
-            $password: String!
-        ) {
-            signup (
-                email: $email,
-                password: $password,
-                name: $name
-            ) {
-                token
-                user {
-                    id
-                    name
-                    email
-                }
-            }
-        }
-    `
     const [login] = useMutation(LOGIN_MUTATION, {
         variables: {
             email: formState.email,
@@ -131,7 +96,7 @@ const Login = (props) => {
                     />
                 </FormField>
 
-                <Box direction='row' gap='medium'>
+                <Box direction={size === "small" ? 'column' : 'row'} width={size === "small" ? "small" : "large"} margin={size === "small" ? { top: "large" } : ""} gap='medium'>
                     <Button type='submit' primary label={formState.newUser ? 'Sign Up' : 'Login'} />
                     <Button type='button'
                         label={formState.newUser ? "Already have an account?" : "Don't have an account?"}
