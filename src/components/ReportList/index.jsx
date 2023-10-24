@@ -26,7 +26,30 @@ const ReportList = () => {
         }
     })
 
-    const [deleteReport] = useMutation(DELETE_MUTATION)
+    const [deleteReport] = useMutation(DELETE_MUTATION, {
+        update: (cache, { data: { deleteReport } }) => {
+            const data = cache.readQuery({
+                query: FIND_REPORTS,
+                variables: {
+                    orderBy
+                }
+            });
+
+            const updatedData = data.report.filter((item) => {
+                return (item.id !== deleteReport.id);
+            })
+
+            cache.writeQuery({
+                query: FIND_REPORTS,
+                data: {
+                    report: updatedData
+                },
+                variables: {
+                    orderBy
+                }
+            })
+        }
+    })
 
     const { data, loading, error } = useQuery(FIND_REPORTS, {
         variables: {
@@ -43,7 +66,7 @@ const ReportList = () => {
             )}
 
             {data && data.report.length === 0
-                ? (<Text textAlign="center">No Reports Found</Text>)
+                ? (<Text textAlign="center" margin={{ top: "large" }} size="large">No Reports Found. Please Create One</Text>)
                 : (
                     data && (
                         <Box>
@@ -140,6 +163,7 @@ const ReportList = () => {
                                         },
                                         {
                                             property: 'id',
+                                            primaryKey: true,
                                             header: "Modify",
                                             render: (datum) => {
                                                 return (

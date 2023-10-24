@@ -51,7 +51,7 @@ const UpdateReport = () => {
     return (
         <Box
             width={"large"}
-            margin={{ horizontal: "auto", top: "xlarge" }}
+            margin={{ horizontal: "auto", top: "xlarge", bottom: "xlarge" }}
             background={"secondary"}
             round="medium"
             pad={"medium"}
@@ -136,7 +136,7 @@ const UpdateReport = () => {
                     />
                 </FormField>
 
-                <Box direction='row' gap='medium'>
+                <Box direction='row' gap='medium' margin={{ top: "large" }}>
                     <Button type='submit' primary label="Update report" />
 
                     <Button type='reset' label="Reset" onClick={() => setFormState({

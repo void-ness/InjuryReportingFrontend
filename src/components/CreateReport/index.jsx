@@ -5,6 +5,7 @@ import { Box, Button, DateInput, Form, FormField, Header, Heading, MaskedInput, 
 import { POST_REPORT_MUTATION } from "../../utils/graphql/Mutations";
 import { AUTH_TOKEN } from "../../constants";
 import { InputTimeMask, getQueryVariables } from "../../utils/helper";
+import { FIND_REPORTS } from "../../utils/graphql/Queries";
 
 const CreateReport = () => {
     const [formState, setFormState] = useState({
@@ -25,8 +26,28 @@ const CreateReport = () => {
         }
     })
 
+    const orderBy = { createdAt: 'desc' };
+
     const [postReport] = useMutation(POST_REPORT_MUTATION, {
-        onCompleted: () => navigate('/')
+        onCompleted: () => navigate('/'),
+        update: (cache, { data: { addReport } }) => {
+            const data = cache.readQuery({
+                query: FIND_REPORTS,
+                variables: {
+                    orderBy
+                }
+            });
+
+            cache.writeQuery({
+                query: FIND_REPORTS,
+                data: {
+                    report: [addReport, ...data.report]
+                },
+                variables: {
+                    orderBy
+                }
+            })
+        }
     })
 
     const handleSubmit = () => {
@@ -40,7 +61,7 @@ const CreateReport = () => {
     return (
         <Box
             width={"large"}
-            margin={{ horizontal: "auto", top: "xlarge" }}
+            margin={{ horizontal: "auto", top: "xlarge", bottom: "xlarge" }}
             background={"secondary"}
             round="medium"
             pad={"medium"}
@@ -89,7 +110,6 @@ const CreateReport = () => {
                         mask={InputTimeMask}
                         value={formState.injuryTime}
                         onChange={(e) => {
-                            console.log(e.target.value);
                             setFormState({
                                 ...formState,
                                 injuryTime: e.target.value
@@ -125,7 +145,7 @@ const CreateReport = () => {
                     />
                 </FormField>
 
-                <Box direction="row" gap='medium'>
+                <Box direction="row" gap='medium' margin={{ top: "large" }}>
                     <Button type='submit' primary label="Add new report" />
 
                     <Button type='reset' label="Reset" onClick={() => setFormState({
